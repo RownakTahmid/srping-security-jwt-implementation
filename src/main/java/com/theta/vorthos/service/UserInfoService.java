@@ -2,11 +2,16 @@ package com.theta.vorthos.service;
 
 import com.theta.vorthos.dto.LoginDto;
 import com.theta.vorthos.dto.UserDto;
-import com.theta.vorthos.model.UserInfo;
-import org.springframework.stereotype.Component;
+import com.theta.vorthos.dto.UserInfoDto;
+import org.springframework.http.ResponseEntity;
 
-@Component
+import java.util.List;
+
 public interface UserInfoService {
     boolean signup(UserDto userDto);
-    boolean login(LoginDto loginDto);
+    ResponseEntity<String> login(LoginDto loginDto);
+    boolean logout();
+    List<UserInfoDto> getUsers();
+    boolean writeArticle(String article);
+    boolean editArticle(String article);
 }

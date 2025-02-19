@@ -5,7 +5,6 @@ import lombok.Builder;
 @Builder
 public record ArticleDto(
          String title,
-         String author,
          String content
 ) {
 }

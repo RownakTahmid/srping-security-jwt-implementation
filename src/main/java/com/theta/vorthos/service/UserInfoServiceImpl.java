@@ -5,6 +5,7 @@ import com.theta.vorthos.dto.UserDto;
 import com.theta.vorthos.dto.UserInfoDto;
 import com.theta.vorthos.mapper.DtoToEntity;
 import com.theta.vorthos.mapper.EntityToDto;
+import com.theta.vorthos.model.BlacklistedTokens;
 import com.theta.vorthos.repository.UserInfoRepository;
 import com.theta.vorthos.utils.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,7 @@ public class UserInfoServiceImpl implements UserInfoService {
     private final UserDetailsService userDetailsService;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
+    private final TokenBlacklistService tokenBlacklistService;
 
     @Override
     public boolean signup(UserDto userDto) {
@@ -54,7 +56,6 @@ public class UserInfoServiceImpl implements UserInfoService {
         try{
              Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginDto.email(),loginDto.password()));
-//            UserDetails userDetails = userDetailsService.loadUserByUsername(loginDto.email());
             return ResponseEntity.status(HttpStatus.OK).body(jwtUtil.generateToken(authentication.getName()));
         }
         catch (Exception e) {
@@ -63,7 +64,11 @@ public class UserInfoServiceImpl implements UserInfoService {
     }
 
     @Override
-    public boolean logout() {
+    public boolean logout(String authorizationHeader) {
+        if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            String token = authorizationHeader.substring(7);
+            return tokenBlacklistService.blacklistToken(token);
+        }
         return false;
     }
 

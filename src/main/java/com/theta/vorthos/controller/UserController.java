@@ -9,21 +9,25 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/vorthos/public")
+@RequestMapping("/vorthos")
 @RequiredArgsConstructor
-public class PublicController {
+public class UserController {
     private final UserInfoService userInfoService;
 
-    @PostMapping("/sign-up")
+    @PostMapping("/public/sign-up")
     public ResponseEntity<String> createUser(@RequestBody UserDto  userDto) {
         return userInfoService.signup(userDto)?ResponseEntity.ok("User Successfully registered!!"):ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User already exist");
     }
-    @PostMapping("/login")
+    @PostMapping("/public/login")
     public ResponseEntity<String> login(@RequestBody LoginDto loginDto) {
         return userInfoService.login(loginDto);
     }
     @GetMapping()
     public String welcomePage(){
         return "Welcome to the vorthos!";
+    }
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(@RequestHeader("Authorization") String authorizedHeader) {
+        return userInfoService.logout(authorizedHeader)?ResponseEntity.status(HttpStatus.OK).body("Successfully logged out"):ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid token");
     }
 }

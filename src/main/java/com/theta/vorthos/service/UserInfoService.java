@@ -10,7 +10,7 @@ import java.util.List;
 public interface UserInfoService {
     boolean signup(UserDto userDto);
     ResponseEntity<String> login(LoginDto loginDto);
-    boolean logout();
+    boolean logout(String AuthorizationHeader);
     List<UserInfoDto> getUsers();
     boolean writeArticle(String article);
     boolean editArticle(String article);

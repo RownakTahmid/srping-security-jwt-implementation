@@ -1,5 +1,6 @@
 package com.theta.vorthos.filter;
 
+import com.theta.vorthos.service.TokenBlacklistService;
 import com.theta.vorthos.utils.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -21,6 +22,7 @@ import java.io.IOException;
 public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
+    private final TokenBlacklistService tokenBlacklistService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -29,6 +31,11 @@ public class JwtFilter extends OncePerRequestFilter {
         String jwt = null;
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwt = authorizationHeader.substring(7);
+            if (tokenBlacklistService.checkTokenBlacklist(jwt)){
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("You have to login first");
+                return;
+            }
             username = jwtUtil.extractUsername(jwt);
         }
         if (username != null) {
